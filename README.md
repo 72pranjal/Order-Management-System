@@ -347,11 +347,3 @@ Solution:
 - Data is seeded on first load, then persisted locally
 - The design is intentionally dark-first and product-oriented for a realistic app feel
 
-## Future Improvements
-Possible next steps:
-- Add a real backend API
-- Add authentication and role-based access
-- Add validation schemas with a library
-- Add unit and component tests
-- Add charts for delivery and fulfillment trends
-- Add server-side persistence and sync across devices
