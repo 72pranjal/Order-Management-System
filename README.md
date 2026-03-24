@@ -210,63 +210,39 @@ src/
   style.css       Global styling
 ```
 
-## Interview / Explanation Guide
+## Order Channels
 
-If you need to explain this project in an interview, focus on these points:
+The system currently works with these order channels:
+- Distributor Portal
+- Field Sales
+- D2C Store
+- B2B Marketplace
+- Hospital Desk
+- WhatsApp Commerce
 
-### 1. This is more than a static UI
-Explain that the app is not just a styled frontend. It includes:
+These channels are used in the seeded dataset and are also available in the create/edit order form.
+
+## Architecture Notes
+
+This project is not only a static UI. It also includes:
 - Shared state management with Pinia
-- Dynamic derived metrics
-- Persistent browser storage
+- Derived metrics and revenue calculations
+- `localStorage` persistence
 - Route-based loading feedback
-- Status-driven updates across multiple screens
+- Shared loading, empty, and error states
+- Dynamic activity generation after order updates
 
-### 2. Centralized business logic
-Point out that order creation, editing, metrics, revenue, timeline generation, and activity generation are handled in one store instead of being duplicated inside each view.
+Main architecture choices:
+- Order business logic is centralized in `src/stores/orders.js`
+- UI-level behavior is managed in `src/stores/ui.js`
+- Views are focused on rendering and user actions
+- Shared components are reused across pages to avoid duplication
 
-Why this is good:
-- Easier to maintain
-- Easier to test
-- UI stays simple
-- Data remains consistent across pages
-
-### 3. Derived UI updates automatically
-A strong demo point is:
-- Change an order status
-- Save it
-- Show that dashboard counts, order detail, order listing, and activity feed all update automatically
-
-This demonstrates reactive state management clearly.
-
-### 4. No backend, but realistic frontend behavior
-Even without an API, the app behaves like a real product because it has:
-- Local persistence
-- Loading states
-- Empty/error views
-- Modal flows
-- Editable records
-- Notification management
-
-### 5. Reusable architecture
-You can explain the separation like this:
-- Views render business data
-- Stores manage business state
-- Components provide reusable UI pieces
-- Helpers handle formatting and derived utility logic
-
-## Suggested Demo Flow
-
-If you want to show the app quickly:
-
-1. Open Dashboard and explain live metrics
-2. Go to Orders and use filters/search
-3. Open an order detail page
-4. Edit the order and change its status
-5. Save and show that metrics and activity update automatically
-6. Create a brand new order
-7. Open Activity and mark notifications as read
-8. Refresh the page and show that data is still saved
+When an order status changes:
+- dashboard counts update
+- order listing reflects the change
+- detail view reflects the new status/progress
+- activity feed adds a related update
 
 ## Challenges Faced
 
@@ -330,27 +306,46 @@ Solution:
 - Updated cities, phone numbers, customers, and channels
 - Versioned the local storage keys so old saved sample data would not conflict with the new dataset
 
-### 6. Keeping the code reusable instead of duplicating logic in views
-It is easy in Vue apps to place too much logic directly inside page components.
+### 6. Keeping reusable UI components flexible
+Some UI components were shared across multiple pages, but each page still needed slightly different behavior.
 
 Challenge:
-- Avoid repeating filtering, update, formatting, and activity logic across multiple views
+- Reuse the same base components without making the UI too generic
+- Improve shared loading and state sections without breaking all screens
 
 Solution:
-- Kept business rules in stores and helpers
-- Kept views focused on rendering and user interaction
-- Reused shared components like `StateDisplay`, `BaseCard`, `BaseInput`, and `BaseModal`
+- Kept shared components small and reusable
+- Used one common state component for loading, empty, and error states
+- Improved the shared component once so every screen benefited
 
-### How to Explain These in an Interview
-A simple way to explain the project is:
-- The main challenge was not building pages, but keeping the entire workflow consistent across the app
-- I solved that by centralizing business state in Pinia and deriving UI from that source of truth
-- I also added persistence, route-based loading, and reusable shared UI so the app behaves more like a real product than a static frontend demo
+### 7. Balancing realism without backend complexity
+I wanted the app to feel realistic, but I also wanted to keep it frontend-focused and manageable.
+
+Challenge:
+- Add product-like behavior without building a full backend
+- Make the app feel complete enough for real usage and demo purposes
+
+Solution:
+- Used browser storage for persistence
+- Added dynamic notifications and status-based updates
+- Focused on clean state flow so the app still feels practical and structured
+
+### 8. Avoiding duplicated logic across pages
+With multiple screens using the same order data, it would have been easy to repeat business logic in many places.
+
+Challenge:
+- Prevent the dashboard, orders list, detail page, and activity page from having duplicated update logic
+- Keep the code easier to maintain as features grow
+
+Solution:
+- Centralized the business rules in stores and helpers
+- Kept page files focused on rendering and user actions
+- Reused derived data instead of recalculating logic separately in each page
 
 ## Notes
 - This project currently uses browser storage instead of a backend/API
 - Data is seeded on first load, then persisted locally
-- The design is intentionally dark-first and product-oriented for portfolio/interview presentation
+- The design is intentionally dark-first and product-oriented for a realistic app feel
 
 ## Future Improvements
 Possible next steps:
