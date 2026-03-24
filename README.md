@@ -268,6 +268,85 @@ If you want to show the app quickly:
 7. Open Activity and mark notifications as read
 8. Refresh the page and show that data is still saved
 
+## Challenges Faced
+
+### 1. Keeping all screens in sync after an order update
+One of the biggest challenges was making sure that when an order status changes, every related screen updates correctly.
+
+For example:
+- Dashboard counts should update
+- Order list filters should reflect the new status
+- Order detail should show the updated progress
+- Activity feed should create a new status/update entry
+
+Solution:
+- Moved the main business logic into a centralized Pinia store
+- Derived metrics from store state instead of hardcoding them in views
+- Triggered activity generation from create/update store actions
+
+### 2. Persisting data without a backend
+The project does not use an API, but it still needed to behave like a real product.
+
+Challenge:
+- New orders, edited orders, and notification read state should remain after refresh
+
+Solution:
+- Added `localStorage` persistence in the order store
+- Loaded seeded data only as fallback
+- Stored orders and activities under versioned keys
+
+### 3. Making loading states feel realistic across pages
+A static loading component was not enough for a product-style demo.
+
+Challenge:
+- Every major screen should feel responsive when navigating
+- Loading should be shared and consistent
+
+Solution:
+- Added a centralized route-loading flag in the UI store
+- Triggered a 2-second loading state on route changes
+- Improved the shared loading component so it works across all pages
+
+### 4. Managing derived workflow data from status changes
+Status updates affect more than one field.
+
+Challenge:
+- A status change should also affect completion and timeline behavior
+- Existing seeded records should keep their richer timelines
+
+Solution:
+- Added status-based workflow generation in the store
+- Refreshed workflow data only when needed
+- Preserved richer seeded timeline data for existing records
+
+### 5. Adapting the product for an India-focused use case
+The original sample data and formatting were more generic or US-oriented.
+
+Challenge:
+- Make the app feel relevant for an Indian business context
+
+Solution:
+- Switched formatting to `en-IN` and INR
+- Updated cities, phone numbers, customers, and channels
+- Versioned the local storage keys so old saved sample data would not conflict with the new dataset
+
+### 6. Keeping the code reusable instead of duplicating logic in views
+It is easy in Vue apps to place too much logic directly inside page components.
+
+Challenge:
+- Avoid repeating filtering, update, formatting, and activity logic across multiple views
+
+Solution:
+- Kept business rules in stores and helpers
+- Kept views focused on rendering and user interaction
+- Reused shared components like `StateDisplay`, `BaseCard`, `BaseInput`, and `BaseModal`
+
+### How to Explain These in an Interview
+A simple way to explain the project is:
+- The main challenge was not building pages, but keeping the entire workflow consistent across the app
+- I solved that by centralizing business state in Pinia and deriving UI from that source of truth
+- I also added persistence, route-based loading, and reusable shared UI so the app behaves more like a real product than a static frontend demo
+
 ## Notes
 - This project currently uses browser storage instead of a backend/API
 - Data is seeded on first load, then persisted locally
